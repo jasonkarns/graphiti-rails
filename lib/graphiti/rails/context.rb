@@ -3,7 +3,7 @@ module Graphiti
     # Provides a [Graphiti Context](https://www.graphiti.dev/guides/concepts/resources#context)
     # to wrap callbacks like
     # [`#around_action`](https://api.rubyonrails.org/classes/AbstractController/Callbacks/ClassMethods.html#method-i-around_action)
-    # which points to the including instance (eg, controller) by default.
+    # which points to the including instance (eg, controller or job) by default.
     module Context
       extend ActiveSupport::Concern
 
@@ -18,18 +18,36 @@ module Graphiti
           include Graphiti::Rails::Context
           around_action :wrap_graphiti_context
         end
-      end
 
-      # Called by an around callback (like around_action or around_perform)
-      # to wrap the current method in a Graphiti context defined by {#graphiti_context}.
-      def wrap_graphiti_context
-        Graphiti.with_context(graphiti_context, action_name.to_sym) do
-          yield
+        # Called by an around callback (like around_action or around_perform)
+        # to wrap the current method in a Graphiti context defined by {#graphiti_context}.
+        def wrap_graphiti_context
+          Graphiti.with_context(graphiti_context, action_name.to_sym) do
+            yield
+          end
         end
       end
 
+      # Wraps active jobs in a [Graphiti Context](https://www.graphiti.dev/guides/concepts/resources#context) which points to the
+      # job instance by default.
+      concern :ForJobs do
+        included do
+          include Graphiti::Rails::Context
+          around_perform :wrap_graphiti_context
+        end
+
+        # Called by an around callback (like around_action or around_perform)
+        # to wrap the current method in a Graphiti context defined by {#graphiti_context}.
+        def wrap_graphiti_context
+          Graphiti.with_context(graphiti_context) do
+            yield
+          end
+        end
+      end
+
+
       # The context to use for Graphiti Resources.
-      # Defaults to the including instance (eg, controller).
+      # Defaults to the including instance (eg, controller or job).
       # Can be redefined for different behavior.
       def graphiti_context
         if respond_to?(:jsonapi_context)

@@ -49,6 +49,10 @@ ActiveSupport.on_load(:action_controller) do
   register_exception Graphiti::Errors::SingularSideload, status: 400, handler: Graphiti::Rails::ExceptionHandler
 end
 
+ActiveSupport.on_load(:active_job) do
+  include Graphiti::Rails::Context::ForJobs
+end
+
 ActiveSupport.on_load(:active_record) do
   require "graphiti/adapters/active_record"
 end

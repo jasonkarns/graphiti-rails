@@ -10,4 +10,9 @@ RSpec.describe "context", type: :request do
     expect(json["data"]["attributes"]["controller"]).to eq("PostsController")
     expect(json["data"]["attributes"]["action"]).to eq("show")
   end
+
+  it "is assigned to the job automatically" do
+    expect(SomeJob.perform_now).to include(
+      data: [hash_including(controller: "SomeJob")])
+  end
 end
