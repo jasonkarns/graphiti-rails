@@ -3,7 +3,7 @@ namespace :graphiti do
   task :request, [:path, :debug] => [:environment] do |_, args|
     require_relative "rake_helpers"
     extend Graphiti::Rails::RakeHelpers
-    setup_rails!
+
     Graphiti.logger = Graphiti.stdout_logger
     Graphiti::Debugger.preserve = true
     require "pp"
@@ -18,7 +18,7 @@ namespace :graphiti do
   task :benchmark, [:path, :requests] => [:environment] do |_, args|
     require_relative "rake_helpers"
     extend Graphiti::Rails::RakeHelpers
-    setup_rails!
+
     took = Benchmark.ms {
       args[:requests].to_i.times do
         make_request(args[:path])

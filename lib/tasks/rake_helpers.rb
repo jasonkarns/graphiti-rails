@@ -1,6 +1,18 @@
 module Graphiti::Rails::RakeHelpers
   extend RescueRegistry::RailsTestHelpers
 
+  def self.included(klass)
+    klass.class_eval do
+      setup_rails!
+    end
+  end
+
+  def self.extended(other)
+    other.instance_eval do
+      setup_rails!
+    end
+  end
+
   module_function
 
   def session
