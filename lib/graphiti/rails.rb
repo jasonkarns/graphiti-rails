@@ -37,7 +37,7 @@ module Graphiti
 end
 
 ActiveSupport.on_load(:action_controller) do
-  include Graphiti::Rails::Context
+  include Graphiti::Rails::Context::ForControllers
   include Graphiti::Rails::Debugging
 
   # A global handler here is somewhat risky. However, we explicitly only handle JSON:API by default.
